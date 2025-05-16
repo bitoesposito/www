@@ -82,6 +82,6 @@ class __TwigTemplate_b4b980dc524eef34e49817216bd05262 extends Template
 
     public function getSourceContext()
     {
-        return new Source("", "display/results/row_data.twig", "C:\\Users\\vito.esposito\\Desktop\\laragon\\www\\phpadmin\\templates\\display\\results\\row_data.twig");
+        return new Source("", "display/results/row_data.twig", "C:\\laragon\\www\\phpadmin\\templates\\display\\results\\row_data.twig");
     }
 }

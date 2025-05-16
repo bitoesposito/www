@@ -91,6 +91,6 @@ class __TwigTemplate_d66d396641af54d65a8ca29e811062e6 extends Template
 
     public function getSourceContext()
     {
-        return new Source("", "sql/sql_query_results.twig", "C:\\Users\\vito.esposito\\Desktop\\laragon\\www\\phpadmin\\templates\\sql\\sql_query_results.twig");
+        return new Source("", "sql/sql_query_results.twig", "C:\\laragon\\www\\phpadmin\\templates\\sql\\sql_query_results.twig");
     }
 }

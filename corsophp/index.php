@@ -38,10 +38,29 @@ require_once 'components/nav.php';
 
     <?php
 
+    showSessionMsg();
     $action = getParam('action');
 
     switch ($action) {
-      case 'update':
+      case 'edit':
+
+        require_once 'model/User.php';
+        $id = getParam('id');
+        $user = getUserById($id);
+
+        require_once 'components/userForm.php';
+        break;
+
+      case 'insert':
+
+        $user = [
+          'id' => 0,
+          'username' => '',
+          'email' => '',
+          'fiscalcode' => '',
+          'age' => ''
+        ];
+
         require_once 'components/userForm.php';
         break;
     

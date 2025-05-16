@@ -34,7 +34,7 @@ $indexActive = !$action ? 'active' : '';
 
         $message = strtolower($_SESSION['message']);
         $success = $_SESSION['success'] ?? true;
-        $alertType = $success ? 'success' : 'danger';
+        $alertType = $message['messageType'] ?? 'success';
 
         require_once './components/message.php';
 

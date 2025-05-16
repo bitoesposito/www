@@ -122,3 +122,13 @@ function dd(mixed $data = null) {
     var_dump($data);
     die;
 }
+
+function showSessionMsg() {
+  if (!empty($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    unset($_SESSION['message']);
+    $alertType = $_SESSION['messageType'] ?? 'success';
+    unset($_SESSION['messageType']);
+    require_once 'components/message.php';
+  }
+}

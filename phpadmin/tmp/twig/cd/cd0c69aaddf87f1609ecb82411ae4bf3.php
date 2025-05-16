@@ -293,6 +293,6 @@ class __TwigTemplate_bb7c91d6d0fd358156dc510420a9177d extends Template
 
     public function getSourceContext()
     {
-        return new Source("", "display/results/checkbox_and_links.twig", "C:\\Users\\vito.esposito\\Desktop\\laragon\\www\\phpadmin\\templates\\display\\results\\checkbox_and_links.twig");
+        return new Source("", "display/results/checkbox_and_links.twig", "C:\\laragon\\www\\phpadmin\\templates\\display\\results\\checkbox_and_links.twig");
     }
 }

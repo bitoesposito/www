@@ -321,6 +321,6 @@ $context["index"], "getName", [], "method", false, false, false, 51))];
 
     public function getSourceContext()
     {
-        return new Source("", "indexes.twig", "C:\\Users\\vito.esposito\\Desktop\\laragon\\www\\phpadmin\\templates\\indexes.twig");
+        return new Source("", "indexes.twig", "C:\\laragon\\www\\phpadmin\\templates\\indexes.twig");
     }
 }

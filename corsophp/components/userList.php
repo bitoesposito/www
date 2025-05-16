@@ -72,7 +72,7 @@ $maxLinks = getConfig('maxLinks', 10);
           <td>
             <div class="d-flex gap-2">
               <a
-                href="?action=update&id=<?= $user['id'] ?>&<?= $paginationParams ?>"
+                href="?action=edit&id=<?= $user['id'] ?>&<?= $paginationParams ?>"
                 class="btn btn-outline-primary">
                 <i class="fa fa-pen fs-6"></i>
               </a>
