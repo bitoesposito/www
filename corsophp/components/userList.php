@@ -30,6 +30,7 @@ $maxLinks = getConfig('maxLinks', 10);
       <th class="<?= $orderBy === 'age' ? $orderDirClass : '' ?>">
         <a href="?<?= $headerParams ?>&orderBy=age">AGE</a>
       </th>
+      <th>&nbsp;</th>
 
     </tr>
   </thead>
@@ -45,6 +46,21 @@ $maxLinks = getConfig('maxLinks', 10);
           <td><?= $user['fiscalcode'] ?></td>
           <td><a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></td>
           <td><?= $user['age'] ?></td>
+          <td>
+            <div class="d-flex gap-2">
+              <a 
+                href="<?= $updateUrl ?>?action=update&id=<?=$user['id']?>&<?=$paginationParams?>" 
+                class="btn btn-outline-primary">
+                <i class="fa fa-pen fs-6"></i>
+              </a>
+              <a 
+                onclick="return confirm('Are you sure you want to delete this user?')"
+                href="<?= $updateUrl ?>?action=delete&id=<?=$user['id']?>&<?=$paginationParams?>"
+                class="btn btn-outline-secondary">
+                <i class="fa fa-trash fs-6"></i>
+              </a>
+            </div>
+          </td>
         </tr>
 
       <?php

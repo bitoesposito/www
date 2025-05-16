@@ -1,4 +1,5 @@
 <?php
+
 function createPagination(
   int $totalRecords,
   int $recordsPerPage,

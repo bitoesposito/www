@@ -10,7 +10,6 @@
   <script src="./js/jquery.js"></script>
   <link href="./css/style.css" rel="stylesheet" >
   <link href="./css/bootstrap.min.css" rel="stylesheet" >
-  <link href="./css/sticky-footer-navbar.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" >
   
   <link rel="preconnect" href="https://fonts.googleapis.com">

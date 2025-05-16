@@ -62,10 +62,10 @@ function getConfig($param) {
 }
 
 function getUsers(array $params = []) {
-  $conn = $GLOBALS['mysqli'];
+  $conn = getConnection();
 
   $orderBy = $params['orderBy'] ?? 'id';
-  $orderDir = $params['orderDir'] ?? 'ASC';
+  $orderDir = $params['orderDir'] ?? 'DESC';
   $search = $params['search'] ?? '';
   $limit = (int)($params['recordsPerPage'] ?? 10);
   $page = $params['page'] ?? 1;
@@ -96,7 +96,7 @@ function getUsers(array $params = []) {
 }
 
 function getTotaUsersCount(string $search = ''):int {
-  $conn = $GLOBALS['mysqli'];
+  $conn = getConnection();
 
   $sql = "SELECT COUNT(*) as total FROM users";
   if ($search) {
@@ -116,4 +116,9 @@ function getTotaUsersCount(string $search = ''):int {
   }
 
   return 0;
+}
+
+function dd(mixed $data = null) {
+    var_dump($data);
+    die;
 }

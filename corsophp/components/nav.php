@@ -8,7 +8,7 @@ $indexActive = !$action ? 'active' : '';
 <!-- Fixed navbar -->
 <header>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-    <div class="container-fluid"> <a class="navbar-brand"
+    <div class="container"> <a class="navbar-brand"
         href="#"><h2><i><b>UMS php</b></i></h2></a> <button
         class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
         aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"> <span
