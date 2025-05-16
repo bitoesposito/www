@@ -1,8 +1,14 @@
 <?php
-$orderDir = $orderDir === 'ASC' ? 'DESC' : 'ASC';
+$nextOrderDir = $orderDir === 'ASC' ? 'DESC' : 'ASC';
 $orderDirClass = $orderDir;
 
-$params = "?search=$search&recordsPerPage=$recordsPerPage&orderDir=$orderDir";
+// Separate parameters for table headers (with next order direction) and pagination (with current order direction)
+$headerParams = "search=$search&recordsPerPage=$recordsPerPage&orderDir=$nextOrderDir";
+$paginationParams = "search=$search&recordsPerPage=$recordsPerPage&orderDir=$orderDir&orderBy=$orderBy";
+
+$baseUrl = "?$paginationParams";
+
+$maxLinks = getConfig('maxLinks', 10);
 ?>
 
 <table class="table table-dark table-striped">
@@ -10,19 +16,19 @@ $params = "?search=$search&recordsPerPage=$recordsPerPage&orderDir=$orderDir";
     <tr>
 
       <th class="<?= $orderBy === 'id' ? $orderDirClass : '' ?>">
-        <a href="<?= $params ?>&orderBy=id">ID</a>
+        <a href="?<?= $headerParams ?>&orderBy=id">ID</a>
       </th>
       <th class="<?= $orderBy === 'username' ? $orderDirClass : '' ?>">
-        <a href="<?= $params ?>&orderBy=username">NAME</a>
+        <a href="?<?= $headerParams ?>&orderBy=username">NAME</a>
       </th>
       <th class="<?= $orderBy === 'fiscalcode' ? $orderDirClass : '' ?>">
-        <a href="<?= $params ?>&orderBy=fiscalcode">FISCAL CODE</a>
+        <a href="?<?= $headerParams ?>&orderBy=fiscalcode">FISCAL CODE</a>
       </th>
       <th class="<?= $orderBy === 'email' ? $orderDirClass : '' ?>">
-        <a href="<?= $params ?>&orderBy=email">EMAIL</a>
+        <a href="?<?= $headerParams ?>&orderBy=email">EMAIL</a>
       </th>
       <th class="<?= $orderBy === 'age' ? $orderDirClass : '' ?>">
-        <a href="<?= $params ?>&orderBy=age">AGE</a>
+        <a href="?<?= $headerParams ?>&orderBy=age">AGE</a>
       </th>
 
     </tr>
@@ -57,5 +63,6 @@ $params = "?search=$search&recordsPerPage=$recordsPerPage&orderDir=$orderDir";
 </table>
 
 <?php
-  include 'pagination.php';
+  require 'pagination.php';
+  echo createPagination($totalRecords, $recordsPerPage, $currentPage , $baseUrl, $maxLinks);
 ?>

@@ -68,6 +68,9 @@ function getUsers(array $params = []) {
   $orderDir = $params['orderDir'] ?? 'ASC';
   $search = $params['search'] ?? '';
   $limit = (int)($params['recordsPerPage'] ?? 10);
+  $page = $params['page'] ?? 1;
+
+  $start = $limit * ($page - 1);
 
   $records = [];
 
@@ -80,7 +83,7 @@ function getUsers(array $params = []) {
       $sql .= " (fiscalcode LIKE '%$search%' OR email LIKE '%$search%' OR username LIKE '%$search%')";
     }
   }
-  $sql .= " ORDER BY $orderBy $orderDir LIMIT 0, $limit";
+  $sql .= " ORDER BY $orderBy $orderDir LIMIT $start, $limit";
   $res = $conn->query($sql);
   
   if ($res) {  
@@ -90,4 +93,27 @@ function getUsers(array $params = []) {
   }
 
   return $records;
+}
+
+function getTotaUsersCount(string $search = ''):int {
+  $conn = $GLOBALS['mysqli'];
+
+  $sql = "SELECT COUNT(*) as total FROM users";
+  if ($search) {
+    $sql .= " WHERE";
+    if(is_numeric($search)) {
+      $sql .= " id = $search OR age = $search";
+    } else {
+      $search = $conn->real_escape_string($search);
+      $sql .= " fiscalcode LIKE '%$search%' OR email LIKE '%$search%' OR username LIKE '%$search%'";
+    }
+  }
+
+  $res = $conn->query($sql);
+  
+  if ($res && $row = $res->fetch_assoc()) {
+    return (int) $row['total'];
+  }
+
+  return 0;
 }

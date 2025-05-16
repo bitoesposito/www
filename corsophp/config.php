@@ -8,5 +8,6 @@ return [
   'recordsPerPage' => 10,
   'orderByColums' => ['id', 'username', 'fiscalcode', 'email', 'age'],
   'recordsPerPageOptions' => [ 5,10,15,20,50,100],
-  'search' => ''
+  'search' => '',
+  'maxLinks' => 11
 ];
