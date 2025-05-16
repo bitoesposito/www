@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require '../functions.php';
 require '../model/User.php';
 require_once '../functions.php';
@@ -16,6 +18,10 @@ switch ($action) {
 
     $queryString = http_build_query($params);
     header('Location:../index.php?'.$queryString);
+
+    $message = $res ? 'USER '.$id.' deleted':' error deleting user'.$id;
+    $_SESSION['message'] = $message;
+    $_SESSION['success'] = $res;
     
     break;
   case 'update':

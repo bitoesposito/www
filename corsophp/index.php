@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+session_start();
 
 require_once 'functions.php';
 
@@ -34,6 +35,7 @@ require_once 'components/nav.php';
 <!-- Begin page content -->
 <main class="flex-shrink-0" style="margin-top:5rem;">
   <div class="container">
+
     <div class="w-100 d-flex justify-content-between align-items-center">
       <h2>Users list</h2>
 

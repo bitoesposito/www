@@ -101,3 +101,8 @@ a {
   padding-left: .25rem;
   font-weight: 400;
 }
+
+.fade-out {
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
