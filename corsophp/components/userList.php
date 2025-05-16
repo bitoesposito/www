@@ -52,7 +52,7 @@ $maxLinks = getConfig('maxLinks', 10);
     } else { ?>
 
       <tr>
-        <td class="text-center" colspan="5">NO RECORDS FOUND</td>
+        <td class="text-center" colspan="5">No records found</td>
       </tr>
 
     <?php

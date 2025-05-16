@@ -36,7 +36,7 @@ function createPagination(
   $hidden = $totalPages == 1  ? 'd-none' : '';
   $next = min(($currentPage + 1), $totalPages);
   $html .= '<li class="page-item ' . $disabled . ' ' . $hidden . '"><a class="page-link" href="' . $baseUrl . '&page=' . $next . '">Next</a></li>';
-  $html .= '</ul><p style="margin-bottom:0; line-height:1;">' . $totalRecords . ' records found</p></nav>';
+  $html .= '</ul><p style="margin-bottom:0; line-height:1;">' . $totalRecords . ' records found <br>Page '.$currentPage.' of '.$totalPages.'</p></nav>';
 
   return $html;
 }

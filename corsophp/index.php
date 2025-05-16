@@ -31,7 +31,7 @@ require_once 'components/nav.php';
 <main class="flex-shrink-0 mt-5">
   <div class="container">
     <div class="w-100 d-flex justify-content-between align-items-center">
-      <h2>Cerca un utente</h2>
+      <h2>Users list</h2>
 
       <form style="margin: 0;" role="search" id="searchForm" method="GET" class="d-flex gap-2 align-items-center">
         <input type="hidden" name="orderBy" value="<?= $orderBy ?>">
@@ -49,7 +49,7 @@ require_once 'components/nav.php';
           ?>
         </select>
 
-        <input type="search" name="search" id="" class="form-control me-2" value="<?= $search ?>" placeholder="Cerca un utente...">
+        <input type="search" name="search" id="" class="form-control me-2" value="<?= $search ?>" placeholder="Search a user...">
         <a href="<?= $page ?>" class="btn btn-outline-secondary"><i class="fa fa-repeat" aria-hidden="true"></i></a>
       </form>
 
