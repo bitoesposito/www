@@ -36,34 +36,20 @@ require_once 'components/nav.php';
 <main class="flex-shrink-0" style="margin-top:5rem;">
   <div class="container">
 
-    <div class="w-100 d-flex justify-content-between align-items-center">
-      <h2>Users list</h2>
-
-      <form style="margin: 0;" role="search" id="searchForm" method="GET" class="d-flex gap-2 align-items-center">
-
-        <label style="line-height: 1;" class="form-label mb-0" for="recordsPerPage">Records per page</label>
-        <select style="width: 5rem;" class="form-select" name="recordsPerPage" onchange="document.forms.searchForm.submit()">
-
-          <?php
-          foreach ($recordsPerPageOptions as $v) {
-            $v = (int) $v;
-            $selected = $v === $recordsPerPage ? 'selected' : '';
-            echo "<option $selected value='$v'>$v</option>\n";
-          }
-          ?>
-        </select>
-
-        <input type="search" name="search" class="form-control me-2" value="<?= $search ?>" placeholder="Search a user...">
-        <a href="<?= $page ?>" class="btn btn-outline-secondary"><i class="fa fa-repeat" aria-hidden="true"></i></a>
-      </form>
-
-    </div>
-
     <?php
 
     $action = getParam('action');
 
-    require_once './controller/displayUsers.php';
+    switch ($action) {
+      case 'update':
+        require_once 'components/userForm.php';
+        break;
+    
+      default:
+        require_once './controller/displayUsers.php';
+        break;
+    }
+
     ?>
 
   </div>
