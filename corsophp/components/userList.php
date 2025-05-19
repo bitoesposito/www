@@ -53,6 +53,9 @@ $maxLinks = getConfig('maxLinks', 10);
       <th class="<?= $orderBy === 'age' ? $orderDirClass : '' ?>">
         <a href="?<?= $headerParams ?>&orderBy=age">AGE</a>
       </th>
+      <th class="<?= $orderBy === 'avatar' ? $orderDirClass : '' ?>">
+        <a href="?<?= $headerParams ?>&orderBy=avatar">AVATAR</a>
+      </th>
       <th>&nbsp;</th>
 
     </tr>
@@ -64,12 +67,18 @@ $maxLinks = getConfig('maxLinks', 10);
       foreach ($users as $user) { ?>
 
         <tr>
-          <td><?= $user['id'] ?></td>
-          <td><?= $user['username'] ?></td>
-          <td><?= $user['fiscalcode'] ?></td>
-          <td><a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></td>
-          <td><?= $user['age'] ?></td>
-          <td>
+          <td style="vertical-align: middle;"><?= $user['id'] ?></td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px" ><?= $user['username'] ?></td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px" ><?= $user['fiscalcode'] ?></td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px" ><a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></td>
+          <td style="vertical-align: middle;"><?= $user['age'] ?></td>
+          <td style="vertical-align: middle;"><?php
+            if ($user['avatar']) { ?>
+              <img src="<?= $user['avatar'] ?>" alt="avatr" width="50px" class="rounded">
+            <?php
+            }
+          ?></td>
+          <td class="flex align-items-center">
             <div class="d-flex gap-2">
               <a
                 href="?action=edit&id=<?= $user['id'] ?>&<?= $paginationParams ?>"
@@ -91,7 +100,7 @@ $maxLinks = getConfig('maxLinks', 10);
     } else { ?>
 
       <tr>
-        <td class="text-center" colspan="5">No records found</td>
+        <td class="text-center" colspan="7">No records found</td>
       </tr>
 
     <?php

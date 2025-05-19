@@ -10,15 +10,16 @@
     $formTitle = 'Create new user';
   }
 
-  foreach ($user as $value) {
-    $value = htmlspecialchars($value);
+  // Sanitize user data, handling null values
+  foreach ($user as $key => $value) {
+    $user[$key] = $value !== null ? htmlspecialchars((string)$value) : '';
   }
 
 ?>
 
 <h3 class="mb-3"><?= $formTitle ?></h3>
 
-<form action="controller/updateRecord.php" method="post" class="d-flex flex-column gap-3">
+<form enctype="multipart/form-data" action="controller/updateRecord.php" method="post" class="d-flex flex-column gap-3">
 
   <input type="hidden" name="id" value="<?= $user['id'] ?>">
   <input type="hidden" name="action" value="<?= $action ?>">
@@ -43,18 +44,25 @@
       <label id="age" name="age" class="form-label mb-0">Age</label>
       <input type="number" name="age" id="age" class="form-control" placeholder="Insert age..." value="<?= $user['age'] ?>">
     </div>
+
+    <div class="d-flex flex-column">
+      <label id="avatar" name="avatar" class="form-label mb-0">Avatar</label>
+      <input type="file" accept=".jpg, .jpeg, .png, .webp" name="avatar" id="avatar" class="form-control" value="<?= $user['avatar'] ?>">
+    </div>
   </div>
 
   <div id="buttons" class="d-flex w-100 justify-content-between gap-2">
-  <button class="btn btn-outline-secondary" style="width: min-content; white-space: nowrap">cancel</button>
+    <a href="<?= $indexPage ?>" class="btn btn-outline-secondary" style="width: min-content; white-space: nowrap">cancel</a>
 
-<div class="d-flex gap-2">
-<div class="d-flex gap-2 w-100 justify-content-end">
-  <?php if($action == 'update') { ?>
-    <button class="btn btn-danger">Delete</button>
-  <?php } ?>
-  <button class="btn btn-primary"><?= $buttonName ?></button>
-</div>
-</div>
+    <div class="d-flex gap-2">
+      <div class="d-flex gap-2 w-100 justify-content-end">
+        <?php if($action == 'update') { ?>
+          <a href="controller/updateRecord.php?action=delete&id=<?= $user['id'] ?>" 
+             onclick="return confirm('Are you sure you want to delete this user?')"
+             class="btn btn-danger">Delete</a>
+        <?php } ?>
+        <button class="btn btn-primary"><?= $buttonName ?></button>
+      </div>
+    </div>
   </div>
 </form>

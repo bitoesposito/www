@@ -9,5 +9,8 @@ return [
   'orderByColums' => ['id', 'username', 'fiscalcode', 'email', 'age'],
   'recordsPerPageOptions' => [ 5,10,15,20,50,100],
   'search' => '',
-  'maxLinks' => 11
+  'maxLinks' => 11,
+  'uploadDir' => 'avatar',
+  'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif'],
+  'maxFileSize' => 2 * 1024 * 1024, // 2MB in bytes
 ];

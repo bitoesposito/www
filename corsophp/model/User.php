@@ -4,9 +4,13 @@ declare(strict_types=1);
 function deleteUser(int $id) : bool {
   require_once '../connection.php';
   $conn = getConnection();
-  $sql = 'DELETE FROM users WHERE id='.$id;
-  $res = $conn->query($sql);
-  return $res && $conn->affected_rows;
+  $sql = 'DELETE FROM users WHERE id = ?';
+  $stm = $conn->prepare($sql);
+  $stm->bind_param('i', $id);
+  $res = $stm->execute();
+  $affected = $stm->affected_rows;
+  $stm->close();
+  return $res && $affected > 0;
 }
 
 function getUserById(int $id) : array {
@@ -24,14 +28,16 @@ function getUserById(int $id) : array {
 function updateUser(array $data, int $id) : bool {
   require_once '../connection.php';
   $conn = getConnection();
-  $sql = 'UPDATE users SET username=?, email=?, fiscalcode=?, age=? WHERE id=?';
+  $sql = 'UPDATE users SET username=?, email=?, fiscalcode=?, age=?, avatar=? WHERE id=?';
   $stm = $conn->prepare($sql);
-  $stm->bind_param('sssii',
+  $stm->bind_param('sssisi',
     $data['username'],
     $data['email'],
     $data['fiscalcode'],
     $data['age'],
-    $id);
+    $data['avatar'],
+    $id
+  );
   $res = $stm->execute();
   $stm->close();
   return $res;
@@ -40,13 +46,14 @@ function updateUser(array $data, int $id) : bool {
 function createUser(array $data) : int {
   require_once '../connection.php';
   $conn = getConnection();
-  $sql = 'INSERT INTO users (username, email, fiscalcode, age) values(?,?,?,?)';
+  $sql = 'INSERT INTO users (username, email, fiscalcode, age, avatar) values(?,?,?,?,?)';
   $stm = $conn->prepare($sql);
-  $stm->bind_param('sssi',
+  $stm->bind_param('sssis',
     $data['username'],
     $data['email'],
     $data['fiscalcode'],
-    $data['age']
+    $data['age'],
+    $data['avatar']
   );
   $res = $stm->execute();
   $stm->close();

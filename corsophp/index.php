@@ -58,7 +58,8 @@ require_once 'components/nav.php';
           'username' => '',
           'email' => '',
           'fiscalcode' => '',
-          'age' => ''
+          'age' => '',
+          'avatar' => ''
         ];
 
         require_once 'components/userForm.php';
