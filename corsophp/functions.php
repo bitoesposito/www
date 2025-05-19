@@ -267,3 +267,28 @@ function formatBytes(int $bytes): string
   return $number.' '.$units[$power];
   
 }
+
+function validateUserData(array $data): array
+{
+  $errors = [];
+
+  if (empty($data['username']) || strlen($data['username']) > 64 || strlen($data['username']) < 3) {
+    $errors['username'] = 'Username must be between 3 and 64 characters';
+  }
+
+  if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+    $errors['email'] = 'Invalid email address';
+  }
+
+  if (empty($data['fiscalcode']) || strlen($data['fiscalcode']) !== 16) {
+    $errors['fiscalcode'] = 'Fiscal code must be 16 characters long';
+  }
+
+  if (!is_numeric($data['age']) || $data['age'] < 18 || $data['age'] > 120) {
+    $errors['age'] = 'Age must be a number between 18 and 120';
+  }
+
+
+
+  return $errors;
+}

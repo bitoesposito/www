@@ -24,6 +24,7 @@
   <input type="hidden" name="id" value="<?= $user['id'] ?>">
   <input type="hidden" name="action" value="<?= $action ?>">
   <input type="hidden" name="MAX_FILE_SIZE" value="<?= convertMaxUploadSizeToBytes() ?>">
+  <input type="hidden" name="oldAvatar" value="<?= $user['avatar'] ?>">
 
   <div class="container p-0 d-flex flex-column gap-2">
     <div class="d-flex flex-column">
