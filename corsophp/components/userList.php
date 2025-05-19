@@ -41,7 +41,7 @@ $maxLinks = getConfig('maxLinks', 10);
       <th style="width: 60px; min-width: 60px;" class="<?= $orderBy === 'id' ? $orderDirClass : '' ?>">
         <a href="?<?= $headerParams ?>&orderBy=id">ID</a>
       </th>
-      <th style="width: 80px;"  class="<?= $orderBy === 'avatar' ? $orderDirClass : '' ?>">
+      <th style="width: 80px;" class="<?= $orderBy === 'avatar' ? $orderDirClass : '' ?>">
         <a href="?<?= $headerParams ?>&orderBy=avatar">AVATAR</a>
       </th>
       <th class="<?= $orderBy === 'username' ? $orderDirClass : '' ?>">
@@ -68,15 +68,19 @@ $maxLinks = getConfig('maxLinks', 10);
 
         <tr>
           <td style="vertical-align: middle;"><?= $user['id'] ?></td>
-          <td style="vertical-align: middle;"><?php
-            if ($user['avatar']) { ?>
-              <img src="<?= $user['avatar'] ?>" alt="avatr" width="50px" class="rounded">
-            <?php
-            }
-          ?></td>
-          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px" ><?= $user['username'] ?></td>
-          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px" ><?= $user['fiscalcode'] ?></td>
-          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px" ><a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></td>
+          <td> <?php
+              if ($user['avatar']) {
+                $fileData = getImgThumbNail($user['avatar']);
+                if ($fileData['avatar']) {
+              ?>
+                <img width="<?= $fileData['width'] ?>" src="<?= $fileData['avatar'] ?>" alt="avatar">
+              <?php
+                }
+              } ?>
+          </td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px"><?= $user['username'] ?></td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px"><?= $user['fiscalcode'] ?></td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px"><a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></td>
           <td style="vertical-align: middle;"><?= $user['age'] ?></td>
           <td class="flex align-items-center">
             <div class="d-flex justify-content-end gap-2">

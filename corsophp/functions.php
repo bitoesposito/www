@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * Utility Functions for User Data Generation
+ */
+
+/**
+ * Establishes database connection
+ * @return mysqli Database connection object
+ */
+require 'connection.php';
+
+/**
+ * Generates a random name by combining random first and last names
+ * @return string Random full name
+ */
 function getRandName()
 {
   $names = ['VITO', 'SAMANTHA', 'DARIO', 'EMANUELE'];
@@ -11,6 +25,11 @@ function getRandName()
   return $names[$rand1] . ' ' . $lastnames[$rand2];
 }
 
+/**
+ * Generates a random email based on a given name
+ * @param string $name The name to use in email generation
+ * @return string Random email address
+ */
 function getRandEmail($name)
 {
   $domains = ['google.com', 'libero.it', 'virgilio.it', 'italia.online'];
@@ -18,6 +37,10 @@ function getRandEmail($name)
   return strtolower(str_replace(' ', '.', $name) . mt_rand(10, 99) . '@' . $domains[$rand3]);
 }
 
+/**
+ * Generates a random 16-character fiscal code
+ * @return string Random fiscal code
+ */
 function getRandFiscalCode()
 {
   $i = 16;
@@ -29,11 +52,20 @@ function getRandFiscalCode()
   return $res;
 }
 
+/**
+ * Generates a random age between 0 and 120
+ * @return int Random age
+ */
 function getRandAge()
 {
   return mt_rand(0, 120);
 }
 
+/**
+ * Inserts random users into the database
+ * @param int $total Number of users to insert
+ * @param mysqli $conn Database connection
+ */
 function insertRandUser(int $total, mysqli $conn)
 {
   while ($total > 0) {
@@ -54,20 +86,15 @@ function insertRandUser(int $total, mysqli $conn)
   }
 }
 
-require 'connection.php';
+/**
+ * Database and User Management Functions
+ */
 
-function getParam($param, $default = '')
-{
-  return $_REQUEST[$param] ?? $default;
-}
-
-function getConfig($param)
-{
-  // var_dump($GLOBALS);
-  $config = require 'config.php';
-  return $config[$param] ?? null;
-}
-
+/**
+ * Retrieves users from database with pagination and search
+ * @param array $params Search and pagination parameters
+ * @return array List of users
+ */
 function getUsers(array $params = [])
 {
   $conn = getConnection();
@@ -103,6 +130,11 @@ function getUsers(array $params = [])
   return $records;
 }
 
+/**
+ * Gets total count of users matching search criteria
+ * @param string $search Search term
+ * @return int Total number of users
+ */
 function getTotaUsersCount(string $search = ''): int
 {
   $conn = getConnection();
@@ -127,43 +159,234 @@ function getTotaUsersCount(string $search = ''): int
   return 0;
 }
 
-function dd(mixed $data = null)
+/**
+ * Validates user input data
+ * @param array $data User data to validate
+ * @return array Array of validation errors
+ */
+function validateUserData(array $data): array
 {
-  var_dump($data);
-  die;
+  $errors = [];
+
+  if (empty($data['username']) || strlen($data['username']) > 64 || strlen($data['username']) < 3) {
+    $errors['username'] = 'Username must be between 3 and 64 characters';
+  }
+
+  if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+    $errors['email'] = 'Invalid email address';
+  }
+
+  if (empty($data['fiscalcode']) || strlen($data['fiscalcode']) !== 16) {
+    $errors['fiscalcode'] = 'Fiscal code must be 16 characters long';
+  }
+
+  if (!is_numeric($data['age']) || $data['age'] < 18 || $data['age'] > 120) {
+    $errors['age'] = 'Age must be a number between 18 and 120';
+  }
+
+  return $errors;
 }
 
-function showSessionMsg()
+/**
+ * File Upload and Management Functions
+ */
+
+/**
+ * Handles avatar file upload and generates all required image versions
+ * @param array $file Uploaded file data
+ * @param int|null $userId User ID for file naming
+ * @param string|null $oldAvatarPath Path to old avatar to delete
+ * @return string|null Path to uploaded file or null if upload failed
+ */
+function handleAvatarUpload(array $file, int $userId = null, ?string $oldAvatarPath = null): ?string
 {
-  if (!empty($_SESSION['message'])) {
-    $message = $_SESSION['message'];
-    unset($_SESSION['message']);
-    $alertType = $_SESSION['messageType'];
-    unset($_SESSION['messageType']);
-    require_once 'view/message.php';
+  try {
+    $config = require 'config.php';
+    $uploadDir = $config['uploadDir'] ?? 'avatar';
+    $uploadDirPath = realpath(__DIR__) . '/' . $uploadDir . '/';
+    
+    // Delete old avatar and its versions if they exist
+    if ($oldAvatarPath) {
+      deleteUserImages($oldAvatarPath);
+    }
+
+    // Validate file
+    $fileErrors = validateFileUpload($file);
+    if (!empty($fileErrors)) {
+      throw new Exception(implode(', ', $fileErrors));
+    }
+
+    // Generate unique filename
+    $mimeMap = [
+      'image/jpeg' => 'jpg',
+      'image/png' => 'png',
+      'image/gif' => 'gif'
+    ];
+    $fileinfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $fileinfo->file($file['tmp_name']);
+    if (!isset($mimeMap[$mimeType])) {
+      throw new Exception('Invalid file type');
+    }
+    
+    $extension = $mimeMap[$mimeType];
+    $fileName = ($userId ? $userId . '_' : '') . bin2hex(random_bytes(8)) . '.' . $extension;
+    $targetPath = $uploadDirPath . $fileName;
+    
+    // Move uploaded file
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+      throw new Exception('Failed to move uploaded file');
+    }
+
+    // Generate thumbnail and intermediate versions
+    createThumbnailAndIntermediate($uploadDir . '/' . $fileName);
+    
+    return $uploadDir . '/' . $fileName;
+  } catch (Exception $e) {
+    error_log('Avatar upload error: ' . $e->getMessage());
+    return null;
   }
 }
 
-function handleAvatarUpload(array $file, int $userId = null): ?string
+/**
+ * Gets the upload directory path
+ * @return string Upload directory path
+ */
+function getUploadDir()
 {
-
-  $config = require 'config.php';
-  $uploadDir = $config['uploadDir'] ?? 'avatar';
-  $uploadDirPath = realpath(__DIR__) . '/' . $uploadDir . '/';
-  $mimeMap = [
-    'image/jpeg' => 'jpg',
-    'image/png' => 'png',
-    'image/gif' => 'gif'
-  ];
-  $fileinfo = new finfo(FILEINFO_MIME_TYPE);
-  $mimeType = $fileinfo->file($file['tmp_name']);
-  //$extension = pathinfo($file['name']);
-  $extension = $mimeMap[$mimeType];
-  $fileName = ($userId ? $userId . '_' : '') . bin2hex(random_bytes(8)) . '.' . $extension;
-  $res = move_uploaded_file($file['tmp_name'], $uploadDirPath . $fileName);
-  return $res ? $uploadDir . '/' . $fileName : null;
+  $uploadDir = getConfig('uploadDir') ?? 'avatar';
+  $uploadDir = realpath(__DIR__) . '/' . trim($uploadDir, '/') . '/';
+  return $uploadDir;
 }
 
+/**
+ * Creates thumbnail and intermediate versions of an image
+ * @param string $originalPath Path to the uploaded avatar file
+ * @return bool True if successful, false otherwise
+ */
+function createThumbnailAndIntermediate(string $originalPath): bool
+{
+  try {
+    $config = require 'config.php';
+    $thumbnailWidth = $config['thumbnailWidth'] ?? 120;
+    $intermediateWidth = $config['intermediateWidth'] ?? 600;
+    
+    // Get absolute path to the original file
+    $sourcePath = realpath(__DIR__ . '/' . $originalPath);
+    if (!$sourcePath || !file_exists($sourcePath)) {
+      throw new Exception("Source file not found: $originalPath");
+    }
+
+    // Get mime type
+    $fileinfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $fileinfo->file($sourcePath);
+    if (!$mimeType) {
+      throw new Exception("Could not determine mime type for: $sourcePath");
+    }
+
+    $fileName = basename($originalPath);
+    $targetDir = getUploadDir();
+    $thumbnailPath = $targetDir . 'thumbnail_' . $fileName;
+    $intermediatePath = $targetDir . 'intermediate_' . $fileName;
+
+    // Create thumbnail and intermediate versions
+    resizeImage($sourcePath, $thumbnailPath, $thumbnailWidth, $mimeType);
+    resizeImage($sourcePath, $intermediatePath, $intermediateWidth, $mimeType);
+    
+    return true;
+  } catch (Exception $e) {
+    error_log('Image processing error: ' . $e->getMessage());
+    return false;
+  }
+}
+
+/**
+ * Resizes an image to a specified width and height
+ * @param string $sourcePath Source image path
+ * @param string $targetPath Destination image path
+ * @param int $width Desired width
+ * @param string $mimeType Image mime type
+ */
+function resizeImage(string $sourcePath, string $targetPath, int $width, string $mimeType): void
+{
+  // Create source image based on mime type
+  $sourceImage = null;
+  switch ($mimeType) {
+    case 'image/jpeg':
+      $sourceImage = imagecreatefromjpeg($sourcePath);
+      break;
+    case 'image/png':
+      $sourceImage = imagecreatefrompng($sourcePath);
+      break;
+    case 'image/gif':
+      $sourceImage = imagecreatefromgif($sourcePath);
+      break;
+    default:
+      throw new Exception("Unsupported image type: $mimeType");
+  }
+
+  if (!$sourceImage) {
+    throw new Exception("Failed to create image from source: $sourcePath");
+  }
+
+  $originalWidth = imagesx($sourceImage);
+  $originalHeight = imagesy($sourceImage);
+  $newHeight = floor($originalHeight * ($width / $originalWidth));
+  $newImage = imagecreatetruecolor($width, $newHeight);
+
+  // Preserve transparency for PNG images
+  if ($mimeType === 'image/png') {
+    imagealphablending($newImage, false);
+    imagesavealpha($newImage, true);
+  }
+
+  imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $width, $newHeight, $originalWidth, $originalHeight);
+  
+  // Save the resized image
+  $quality = getConfig('imageQuality') ?? 90;
+  switch ($mimeType) {
+    case 'image/jpeg':
+      imagejpeg($newImage, $targetPath, $quality);
+      break;
+    case 'image/png':
+      imagepng($newImage, $targetPath, $quality);
+      break;
+    case 'image/gif':
+      imagegif($newImage, $targetPath, $quality);
+      break;
+  }
+
+  imagedestroy($newImage);
+  imagedestroy($sourceImage);
+}
+
+/**
+ * Gets the thumbnail URL for a given path
+ * @param string $path The path to the uploaded avatar file
+ * @return string|null The thumbnail URL or null if the file does not exist
+ */
+function getImgThumbNail(string $path, string $size = 's'): array
+{
+    $imgWidth = getConfig($size === 's' ? 'thumbnailWidth' : 'intermediateWidth', 120);
+    $fileData = ['width' => $imgWidth, 'avatar' => ''];
+    $prefix = $size === 's' ? 'thumbnail_' : 'intermediate_';
+    $fileName = $prefix . basename($path);
+    $thumbnail = getConfig('uploadDir', 'avatar')
+        . '/' . $fileName;
+
+    $uploadDir  = getUploadDir() . '/' . $fileName;
+    if (file_exists($uploadDir)) {
+        $fileData['avatar'] = $thumbnail;
+        $fileData['width'] = $imgWidth;
+    }
+
+    return $fileData;
+}
+
+/**
+ * Validates uploaded file
+ * @param array $file File data to validate
+ * @return array Array of validation errors
+ */
 function validateFileUpload(array $file): array
 {
   $errors = [];
@@ -186,6 +409,11 @@ function validateFileUpload(array $file): array
   return $errors;
 }
 
+/**
+ * Gets human-readable upload error message
+ * @param int $errorCode PHP upload error code
+ * @return string Error message
+ */
 function getUploadError(int $errorCode): string
 {
   $error = '';
@@ -193,23 +421,22 @@ function getUploadError(int $errorCode): string
   switch ($errorCode) {
     case UPLOAD_ERR_INI_SIZE:
     case UPLOAD_ERR_FORM_SIZE:
-
       $error = 'File size exceeds the allowed limit.';
       break;
     case UPLOAD_ERR_PARTIAL:
-      $error  = 'The file was only partially uploaded.';
+      $error = 'The file was only partially uploaded.';
       break;
     case UPLOAD_ERR_NO_FILE:
-      $error  = 'No file was uploaded.';
+      $error = 'No file was uploaded.';
       break;
     case UPLOAD_ERR_NO_TMP_DIR:
-      $error  = 'Missing temporary folder.';
+      $error = 'Missing temporary folder.';
       break;
     case UPLOAD_ERR_CANT_WRITE:
       $error = 'Failed to write file to disk.';
       break;
     case UPLOAD_ERR_EXTENSION:
-      $error  = 'File upload stopped by extension.';
+      $error = 'File upload stopped by extension.';
       break;
     default:
       $error = 'Unknown file upload error.';
@@ -218,12 +445,70 @@ function getUploadError(int $errorCode): string
   return $error;
 }
 
+/**
+ * Utility Functions
+ */
+
+/**
+ * Gets request parameter with default value
+ * @param string $param Parameter name
+ * @param string $default Default value
+ * @return string Parameter value
+ */
+function getParam($param, $default = '')
+{
+  return $_REQUEST[$param] ?? $default;
+}
+
+/**
+ * Gets configuration value
+ * @param string $param Configuration key
+ * @return mixed Configuration value
+ */
+function getConfig($param)
+{
+  $config = require 'config.php';
+  return $config[$param] ?? null;
+}
+
+/**
+ * Debug function to dump and die
+ * @param mixed $data Data to dump
+ */
+function dd(mixed $data = null)
+{
+  var_dump($data);
+  die;
+}
+
+/**
+ * Shows session message if exists
+ */
+function showSessionMsg()
+{
+  if (!empty($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    unset($_SESSION['message']);
+    $alertType = $_SESSION['messageType'];
+    unset($_SESSION['messageType']);
+    require_once 'view/message.php';
+  }
+}
+
+/**
+ * Sets flash message in session
+ * @param string $message Message text
+ * @param string $type Message type
+ */
 function setFlashMessage(string $message, string $type = 'info')
 {
   $_SESSION['message'] = $message;
   $_SESSION['messageType'] = $type;
 }
 
+/**
+ * Redirects with query parameters
+ */
 function redirectWithParams(): void
 {
   $params = $_GET;
@@ -237,12 +522,16 @@ function redirectWithParams(): void
   exit;
 }
 
-function convertMaxUploadSizeToBytes():int
+/**
+ * Converts max upload size to bytes
+ * @return int Size in bytes
+ */
+function convertMaxUploadSizeToBytes(): int
 {
   $maxUploadSize = ini_get('upload_max_filesize');
-  $number =(int) $maxUploadSize;
+  $number = (int) $maxUploadSize;
   $unit = strtoupper(substr($maxUploadSize, -1));
-  switch($unit){
+  switch($unit) {
     case 'K':
       $number *= 1024;
       break;
@@ -259,36 +548,48 @@ function convertMaxUploadSizeToBytes():int
   return $number;
 }
 
+/**
+ * Formats bytes to human readable format
+ * @param int $bytes Size in bytes
+ * @return string Formatted size
+ */
 function formatBytes(int $bytes): string
 {
   $units = ['B', 'KB', 'MB', 'GB'];
   $power = floor(log($bytes, 1024));
   $number = round($bytes / (1024 ** $power), 2);
   return $number.' '.$units[$power];
-  
 }
 
-function validateUserData(array $data): array
+/**
+ * Deletes all versions of a user's avatar
+ * @param string $avatarPath Path to the avatar file
+ * @return bool True if successful, false otherwise
+ */
+function deleteUserImages(string $avatarPath): bool
 {
-  $errors = [];
+  try {
+    if (!$avatarPath) {
+      return true;
+    }
+    
+    $uploadDir = getUploadDir();
+    $fileName = basename($avatarPath);
+    $filesToDelete = [
+      $uploadDir . $fileName,
+      $uploadDir . 'thumbnail_' . $fileName,
+      $uploadDir . 'intermediate_' . $fileName
+    ];
 
-  if (empty($data['username']) || strlen($data['username']) > 64 || strlen($data['username']) < 3) {
-    $errors['username'] = 'Username must be between 3 and 64 characters';
+    foreach ($filesToDelete as $file) {
+      if (file_exists($file)) {
+        unlink($file);
+      }
+    }
+    
+    return true;
+  } catch (Exception $e) {
+    error_log('Image deletion error: ' . $e->getMessage());
+    return false;
   }
-
-  if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-    $errors['email'] = 'Invalid email address';
-  }
-
-  if (empty($data['fiscalcode']) || strlen($data['fiscalcode']) !== 16) {
-    $errors['fiscalcode'] = 'Fiscal code must be 16 characters long';
-  }
-
-  if (!is_numeric($data['age']) || $data['age'] < 18 || $data['age'] > 120) {
-    $errors['age'] = 'Age must be a number between 18 and 120';
-  }
-
-
-
-  return $errors;
 }
