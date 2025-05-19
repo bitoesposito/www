@@ -12,5 +12,5 @@ return [
   'maxLinks' => 11,
   'uploadDir' => 'avatar',
   'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif'],
-  'maxFileSize' => 2 * 1024 * 1024, // 2MB in bytes
+  'maxFileSize' => convertMaxUploadSizeToBytes()
 ];

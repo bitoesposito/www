@@ -23,7 +23,8 @@
 
   <input type="hidden" name="id" value="<?= $user['id'] ?>">
   <input type="hidden" name="action" value="<?= $action ?>">
-  
+  <input type="hidden" name="MAX_FILE_SIZE" value="<?= convertMaxUploadSizeToBytes() ?>">
+
   <div class="container p-0 d-flex flex-column gap-2">
     <div class="d-flex flex-column">
       <label id="username" name="username" class="form-label mb-0">Username</label>
@@ -47,8 +48,8 @@
 
     <div class="d-flex flex-column">
       <label id="avatar" name="avatar" class="form-label mb-0">Avatar</label>
-      <input type="file" accept=".jpg, .jpeg, .png, .webp" name="avatar" id="avatar" class="form-control" value="<?= $user['avatar'] ?>">
-    </div>
+      <input type="file" accept="<?= implode(',', getConfig('mimeTypes')) ?>" id="avatar" class="form-control" value="<?= $user['avatar'] ?>" name="avatar">
+      <small class="mt-2">Image types : <?= implode(',', getConfig('mimeTypes')) ?>,<br>Max fili size: <?= formatBytes(getConfig('maxFileSize')) ?></small>
   </div>
 
   <div id="buttons" class="d-flex w-100 justify-content-between gap-2">
