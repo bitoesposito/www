@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it" class="h-100" data-bs-theme="dark">
+<html lang="en" class="h-100" data-bs-theme="dark">
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

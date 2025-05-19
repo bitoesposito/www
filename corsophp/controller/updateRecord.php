@@ -1,23 +1,23 @@
 <?php
 
 /**
- * Controller per la gestione delle operazioni CRUD sugli utenti
- * Gestisce le operazioni di creazione, aggiornamento ed eliminazione degli utenti
+ * Controller for managing CRUD operations on users
+ * Handles user creation, update and deletion operations
  */
 
 session_start();
 
-// Inclusione delle dipendenze necessarie
+// Include required dependencies
 require '../functions.php';
 require '../model/User.php';
 require_once '../functions.php';
 
-// Recupero dell'azione da eseguire dai parametri GET
+// Get action from GET parameters
 $action = getParam('action');
 
 switch ($action) {
   case 'create':
-    // Gestione della creazione di un nuovo utente
+    // Handle new user creation
     $userData = [
       'username' => $_POST['username'],
       'email' => $_POST['email'],
@@ -26,17 +26,17 @@ switch ($action) {
       'avatar' => null
     ];
 
-    // Validazione dei dati utente
+    // Validate user data
     $errors = validateUserData($userData);
     if ($errors) {
       setFlashMessage(implode(', ', $errors));
       redirectWithParams();
     }
 
-    // Gestione dell'upload dell'avatar
+    // Handle avatar upload
     $avatarPath = '';
     if ($_FILES['avatar']['name'] && is_uploaded_file($_FILES['avatar']['tmp_name'])) {
-      // Validazione del file prima dell'upload
+      // Validate file before upload
       $errors = validateFileUpload($_FILES['avatar']);
       if (!empty($errors)) {
         setFlashMessage(implode(', ', $errors), 'danger');
@@ -49,12 +49,12 @@ switch ($action) {
     $userData['avatar'] = $avatarPath;
     $res = createUser($userData);
 
-    // Gestione del messaggio di risposta
-    $message = $res ? 'USER ' . $res . ' created' : 'error creating user';
+    // Handle response message
+    $message = $res ? 'User ' . $res . ' created successfully' : 'Error creating user';
     $_SESSION['message'] = $message;
     $_SESSION['messageType'] = $res ? 'success' : 'danger';
 
-    // Redirect alla pagina principale
+    // Redirect to main page
     $params = $_GET;
     unset($params['action']);
     $queryString = http_build_query($params);
@@ -62,27 +62,29 @@ switch ($action) {
     break;
 
   case 'update':
-    // Recupero dell'ID utente e dell'avatar precedente
+    // Get user ID and previous avatar
     $id = (int)$_POST['id'];
     $oldAvatarPath = $_POST['oldAvatar'];
 
-    // Raccolta dei dati aggiornati dal form
+    // Collect updated data from form
     $userData = [
       'id' => $id,
       'username' => trim($_POST['username']),
       'email' => trim($_POST['email']),
       'fiscalcode' => trim($_POST['fiscalcode']),
-      'age' => (int)$_POST['age']
+      'age' => (int)$_POST['age'],
+      'password' => '',
+      'roletype' => 'user'
     ];
 
-    // Validazione dei dati utente
+    // Validate user data
     $errors = validateUserData($userData);
     if ($errors) {
       setFlashMessage(implode(',', $errors));
       redirectWithParams();
     }
 
-    // Gestione del caricamento di un nuovo avatar (se presente)
+    // Handle new avatar upload (if present)
     if (!empty($_FILES['avatar']['name'])) {
       $avatarPath = handleAvatarUpload($_FILES['avatar'], $id, $oldAvatarPath);
       if (!$avatarPath) {
@@ -94,11 +96,11 @@ switch ($action) {
       $userData['avatar'] = $oldAvatarPath;
     }
 
-    // Aggiornamento dell'utente nel database
+    // Update user in database
     $res = updateUser($userData, $id);
     if (!$res) {
-      // Se l'aggiornamento fallisce e abbiamo caricato una nuova immagine, 
-      // eliminiamo la nuova immagine e ripristiniamo quella vecchia
+      // If update fails and we uploaded a new image,
+      // delete the new image and restore the old one
       if (!empty($_FILES['avatar']['name'])) {
         deleteUserImages($userData['avatar']);
         $userData['avatar'] = $oldAvatarPath;
@@ -107,10 +109,10 @@ switch ($action) {
       redirectWithParams();
     }
 
-    // Impostazione del messaggio di feedback nella sessione
+    // Set feedback message in session
     setFlashMessage('User updated successfully', 'success');
 
-    // Ricostruzione dei parametri della query (senza `id` e `action`)
+    // Rebuild query parameters (without `id` and `action`)
     $params = $_GET;
     unset($params['id'], $params['action']);
     $queryString = http_build_query($params);
@@ -120,13 +122,13 @@ switch ($action) {
   case 'delete':
     $id = (int)$_GET['id'];
     
-    // Recupera il path dell'avatar prima di eliminare l'utente
+    // Get avatar path before deleting user
     $user = getUserById($id);
     if ($user && $user['avatar']) {
       deleteUserImages($user['avatar']);
     }
     
-    // Elimina l'utente dal database
+    // Delete user from database
     $res = deleteUser($id);
     if (!$res) {
       setFlashMessage('Error deleting user');
@@ -137,6 +139,6 @@ switch ($action) {
     redirectWithParams();
 
   default:
-    // Nessuna azione specificata
+    // No action specified
     break;
 }

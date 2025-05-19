@@ -10,7 +10,7 @@ $indexActive = !$action ? 'active' : '';
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container align-items-center">
       <a class="navbar-brand"
-        href="#">
+      href="<?= $indexPage ?>">
         <h2><i><b>UMS php</b></i></h2>
       </a>
       <button
@@ -21,7 +21,7 @@ $indexActive = !$action ? 'active' : '';
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="<?= $indexPage ?>"><i class="fa-solid fa-users fa-xs me-1"></i> User</a>
+            <a class="nav-link active" aria-current="page" href="<?= $indexPage ?>"><i class="fa-solid fa-users fa-xs me-1"></i> Users</a>
           </li>
           <li class="nav-item">
             <a class="nav-link <?= $indexActive ?>" href="<?= $indexPage ?>?action=insert"><i class="fa-solid fa-user-plus fa-xs me-1"></i>New user</a>

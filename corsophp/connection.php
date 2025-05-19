@@ -19,7 +19,7 @@ function getConnection() {
   }
   
   // else {
-  //   echo 'Connessione riuscita';
+  //   echo 'Connection successful';
   // }
 
   return $mysqli;

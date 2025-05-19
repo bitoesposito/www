@@ -73,7 +73,7 @@ $maxLinks = getConfig('maxLinks', 10);
                 $fileData = getImgThumbNail($user['avatar']);
                 if ($fileData['avatar']) {
               ?>
-                <img width="<?= $fileData['width'] ?>" src="<?= $fileData['avatar'] ?>" alt="avatar">
+                <img class="rounded" width="<?= $fileData['width'] ?>" src="<?= $fileData['avatar'] ?>" alt="avatar">
               <?php
                 }
               } ?>
