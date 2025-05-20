@@ -10,9 +10,14 @@
     $formTitle = 'Create new user';
   }
 
+  if (!isset($user['roletype'])) {
+    $user['roletype'] = 'user';
+  }
+
   // Sanitize user data, handling null values
-  foreach ($user as $key => $value) {
-    $user[$key] = $value !== null ? htmlspecialchars((string)$value) : '';
+  $fields = ['id', 'username', 'email', 'password', 'roletype', 'fiscalcode', 'age', 'avatar'];
+  foreach ($fields as $key) {
+    $user[$key] = isset($user[$key]) && $user[$key] !== null ? htmlspecialchars((string)$user[$key]) : '';
   }
 
 ?>
@@ -99,27 +104,27 @@
 
 
 <script>
-function handleFileSelect(event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById('preview');
-    const avatar = '<?= $avatar ?>';
-    
-    if (file && preview) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    } else {
-        // Se non c'è file selezionato, mostra l'avatar precedente
-        preview.src = avatar;
-        if (!avatar) {
-            preview.style.display = 'none';
-        } else {
-            preview.style.display = 'block';
-        }
-    }
+  function handleFileSelect(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('preview');
+      const avatar = '<?= $avatar ?>';
+      
+      if (file && preview) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              preview.src = e.target.result;
+              preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+      } else {
+          // Se non c'è file selezionato, mostra l'avatar precedente
+          preview.src = avatar;
+          if (!avatar) {
+              preview.style.display = 'none';
+          } else {
+              preview.style.display = 'block';
+          }
+      }
 }
 </script>
 </form>

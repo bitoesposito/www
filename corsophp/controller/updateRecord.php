@@ -23,6 +23,7 @@ switch ($action) {
       'email' => $_POST['email'],
       'fiscalcode' => $_POST['fiscalcode'],
       'age' => (int)$_POST['age'],
+      'roletype' => $_POST['roletype'] ?? 'user',
       'avatar' => null
     ];
 
@@ -71,10 +72,10 @@ switch ($action) {
       'id' => $id,
       'username' => trim($_POST['username']),
       'email' => trim($_POST['email']),
+      'password' => '',
+      'roletype' => $_POST['roletype'] ?? 'user',
       'fiscalcode' => trim($_POST['fiscalcode']),
       'age' => (int)$_POST['age'],
-      'password' => '',
-      'roletype' => 'user'
     ];
 
     // Validate user data

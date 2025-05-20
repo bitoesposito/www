@@ -28,16 +28,37 @@ function getUserById(int $id) : array {
 function updateUser(array $data, int $id) : bool {
   require_once '../connection.php';
   $conn = getConnection();
-  $sql = 'UPDATE users SET username=?, email=?, fiscalcode=?, age=?, avatar=? WHERE id=?';
+  
+  // Build the SQL query dynamically based on provided fields
+  $sql = "UPDATE users SET username=?, email=?";
+  $types = "ss";
+  $params = [$data['username'], $data['email']];
+  
+  // Add password if provided or use default
+  $password = $data['password'] ?? 'testuser';
+  $sql .= ", password=?";
+  $types .= "s";
+  $params[] = password_hash($password, PASSWORD_DEFAULT);
+  
+  // Add roletype (always set a role)
+  $validRoles = ['user', 'editor', 'admin'];
+  $roletype = isset($data['roletype']) && in_array($data['roletype'], $validRoles) ? $data['roletype'] : 'user';
+  $sql .= ", roletype=?";
+  $types .= "s";
+  $params[] = $roletype;
+  
+  // Add remaining required fields
+  $sql .= ", fiscalcode=?, age=?, avatar=? WHERE id=?";
+  $types .= "sisi";
+  $params[] = $data['fiscalcode'];
+  $params[] = $data['age'];
+  $params[] = $data['avatar'];
+  $params[] = $id;
+  
+  error_log('ROLO TYPE: ' . print_r($data['roletype'], true));
+  
   $stm = $conn->prepare($sql);
-  $stm->bind_param('sssisi',
-    $data['username'],
-    $data['email'],
-    $data['fiscalcode'],
-    $data['age'],
-    $data['avatar'],
-    $id
-  );
+  $stm->bind_param($types, ...$params);
   $res = $stm->execute();
   $stm->close();
   return $res;
@@ -46,11 +67,23 @@ function updateUser(array $data, int $id) : bool {
 function createUser(array $data) : int {
   require_once '../connection.php';
   $conn = getConnection();
-  $sql = 'INSERT INTO users (username, email, fiscalcode, age, avatar) values(?,?,?,?,?)';
+  $sql = 'INSERT INTO users (username, email, password, roletype, fiscalcode, age, avatar) values (?,?,?,?,?,?,?)';
   $stm = $conn->prepare($sql);
-  $stm->bind_param('sssis',
+  
+  // Hash the password
+  $password = password_hash($data['password'] ?? 'testuser', PASSWORD_DEFAULT);
+  
+  // Set default roletype if not valid
+  $validRoles = ['user', 'editor', 'admin'];
+  $roletype = isset($data['roletype']) && in_array($data['roletype'], $validRoles) ? $data['roletype'] : 'user';
+  
+  error_log('ROLO TYPE: ' . print_r($data['roletype'], true));
+  
+  $stm->bind_param('sssssis',
     $data['username'],
     $data['email'],
+    $password,
+    $roletype,
     $data['fiscalcode'],
     $data['age'],
     $data['avatar']

@@ -222,6 +222,7 @@ function handleAvatarUpload(array $file, int $userId = null, ?string $oldAvatarP
       'image/png' => 'png',
       'image/gif' => 'gif'
     ];
+
     $fileinfo = new finfo(FILEINFO_MIME_TYPE);
     $mimeType = $fileinfo->file($file['tmp_name']);
     if (!isset($mimeMap[$mimeType])) {
@@ -280,7 +281,7 @@ function createThumbnailAndIntermediate(string $originalPath): bool
     $fileinfo = new finfo(FILEINFO_MIME_TYPE);
     $mimeType = $fileinfo->file($sourcePath);
     if (!$mimeType) {
-      throw new Exception("Could not determine mime type for: $sourcePath");
+      throw new Exception("Not a valid extension of file: $sourcePath");
     }
 
     $fileName = basename($originalPath);
@@ -399,8 +400,8 @@ function validateFileUpload(array $file): array
 
   $fileinfo = new finfo(FILEINFO_MIME_TYPE);
   $mimeType = $fileinfo->file($file['tmp_name']);
-  if (!in_array($mimeType, $config['mimeTyped'] ?? ['image/jpeg'])) {
-    $errors[] = 'Invalid file type.Allowed types: ' . implode(',', $config['mimeTypes']);
+  if (!in_array($mimeType, $config['mimeTypes'] ?? ['image/jpeg'])) {
+    $errors[] = 'Invalid file type. Allowed types: ' . implode(',', $config['mimeTypes']);
   }
   if ($file['size'] > $config['maxFileSize']) {
     $errors[] = 'File size exceeds ' . $config['maxFileSize'];
