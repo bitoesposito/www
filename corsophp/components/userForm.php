@@ -1,24 +1,29 @@
 <?php
 
-  if($user && $user['id']) {
-    $action = 'update';
-    $buttonName = 'Update';
-    $formTitle = 'Update user';
-  } else {
-    $action = 'create';
-    $buttonName = 'Create';
-    $formTitle = 'Create new user';
-  }
+if (!isUserLogged()) {
+  header('Location: ../login.php');
+  exit;
+}
 
-  if (!isset($user['roletype'])) {
-    $user['roletype'] = 'user';
-  }
+if ($user && $user['id']) {
+  $action = 'update';
+  $buttonName = 'Update';
+  $formTitle = 'Update user';
+} else {
+  $action = 'create';
+  $buttonName = 'Create';
+  $formTitle = 'Create new user';
+}
 
-  // Sanitize user data, handling null values
-  $fields = ['id', 'username', 'email', 'password', 'roletype', 'fiscalcode', 'age', 'avatar'];
-  foreach ($fields as $key) {
-    $user[$key] = isset($user[$key]) && $user[$key] !== null ? htmlspecialchars((string)$user[$key]) : '';
-  }
+if (!isset($user['roletype'])) {
+  $user['roletype'] = 'user';
+}
+
+// Sanitize user data, handling null values
+$fields = ['id', 'username', 'email', 'password', 'roletype', 'fiscalcode', 'age', 'avatar'];
+foreach ($fields as $key) {
+  $user[$key] = isset($user[$key]) && $user[$key] !== null ? htmlspecialchars((string)$user[$key]) : '';
+}
 
 ?>
 
@@ -51,12 +56,12 @@
       <div class="d-flex flex-column w-25">
         <label id="roletype" name="roletype" class="form-label mb-0">Role</label>
         <select class="form-select" name="roletype" id="roletype">
-          <?php 
+          <?php
           foreach (getConfig('roletypes', []) as $role):
             $sel = $user['roletype'] == $role ? 'selected' : '';
             echo "\n<option $sel value='$role'>$role</option>";
           endforeach;
-            ?>
+          ?>
         </select>
       </div>
     </div>
@@ -72,12 +77,12 @@
     </div>
 
     <div class="d-flex">
-    <?php
-        $fileData = getImgThumbNail($user['avatar'], 'm');
-        $avatar = $fileData['avatar'];
-        ?>
-        <img id="preview" src="<?= $fileData['avatar'] ? htmlspecialchars($fileData['avatar']) : '' ?>" class="mt-2"
-            style="width:<?= $fileData['width'] ?>px;<?= $fileData['avatar'] ? '' : 'display:none' ?>; max-height: 160px; object-fit: contain; border-radius: .25rem">
+      <?php
+      $fileData = getImgThumbNail($user['avatar'], 'm');
+      $avatar = $fileData['avatar'];
+      ?>
+      <img id="preview" src="<?= $fileData['avatar'] ? htmlspecialchars($fileData['avatar']) : '' ?>" class="mt-2"
+        style="width:<?= $fileData['width'] ?>px;<?= $fileData['avatar'] ? '' : 'display:none' ?>; max-height: 160px; object-fit: contain; border-radius: .25rem">
     </div>
 
     <div class="d-flex flex-column w-100">
@@ -91,10 +96,10 @@
       <a href="<?= $indexPage ?>" class="btn btn-outline-secondary" style="width: min-content; white-space: nowrap">cancel</a>
       <div class="d-flex gap-2">
         <div class="d-flex gap-2 w-100 justify-content-end">
-          <?php if($action == 'update') { ?>
-            <a href="controller/updateRecord.php?action=delete&id=<?= $user['id'] ?>" 
-               onclick="return confirm('Are you sure you want to delete this user?')"
-               class="btn btn-danger">Delete</a>
+          <?php if ($action == 'update') { ?>
+            <a href="controller/updateRecord.php?action=delete&id=<?= $user['id'] ?>"
+              onclick="return confirm('Are you sure you want to delete this user?')"
+              class="btn btn-danger">Delete</a>
           <?php } ?>
           <button type="submit" class="btn btn-primary"><?= $buttonName ?></button>
         </div>
@@ -103,28 +108,28 @@
   </div>
 
 
-<script>
-  function handleFileSelect(event) {
+  <script>
+    function handleFileSelect(event) {
       const file = event.target.files[0];
       const preview = document.getElementById('preview');
       const avatar = '<?= $avatar ?>';
-      
+
       if (file && preview) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-              preview.src = e.target.result;
-              preview.style.display = 'block';
-          };
-          reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
       } else {
-          // Se non c'è file selezionato, mostra l'avatar precedente
-          preview.src = avatar;
-          if (!avatar) {
-              preview.style.display = 'none';
-          } else {
-              preview.style.display = 'block';
-          }
+        // Se non c'è file selezionato, mostra l'avatar precedente
+        preview.src = avatar;
+        if (!avatar) {
+          preview.style.display = 'none';
+        } else {
+          preview.style.display = 'block';
+        }
       }
-}
-</script>
+    }
+  </script>
 </form>

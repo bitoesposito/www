@@ -1,9 +1,14 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+require_once 'functions.php';
 session_start();
 
-require_once 'functions.php';
+if (!isUserLogged()) {
+  header('Location: login.php');
+  exit;
+}
+
 
 $page = $_SERVER['PHP_SELF'];
 

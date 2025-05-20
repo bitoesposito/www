@@ -1,4 +1,10 @@
 <?php
+
+if (!isUserLogged()) {
+  header('Location: login.php');
+  exit;
+}
+
 $nextOrderDir = $orderDir === 'ASC' ? 'DESC' : 'ASC';
 $orderDirClass = $orderDir;
 
@@ -12,11 +18,11 @@ $maxLinks = getConfig('maxLinks', 10);
 ?>
 
 <div class="w-100 d-flex justify-content-between align-items-center">
-  <h2>Users list</h2>
+  <h3>Users list</h3>
 
   <form style="margin: 0;" role="search" id="searchForm" method="GET" class="d-flex gap-2 align-items-center">
 
-    <label style="line-height: 1;" class="form-label mb-0" for="recordsPerPage">Records per page</label>
+    <small style="line-height: 1;" class="form-label mb-0" for="recordsPerPage">Records per page</small>
     <select style="width: 5rem;" class="form-select" name="recordsPerPage" onchange="document.forms.searchForm.submit()">
 
       <?php
@@ -78,9 +84,19 @@ $maxLinks = getConfig('maxLinks', 10);
                 }
               } ?>
           </td>
-          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px"><?= $user['username'] ?></td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px; line-height: 1;">
+            <?= $user['username'] ?>
+            <br>
+            <small class="text-muted mt-0 text-uppercase"><?= $user['roletype'] ?></small>
+            </td>
           <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px"><?= $user['fiscalcode'] ?></td>
-          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px"><a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></td>
+          <td style="vertical-align: middle; text-overflow:ellipsis; white-space: nowrap; overflow: hidden; max-width: 100px; line-height: 1.2;">
+            <a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a>
+            <br>
+            <?php if (!empty($user['password'])): ?>
+              <i class="fa fa-key text-muted" style="font-size: 0.8rem;"></i>
+            <?php endif; ?>
+          </td>
           <td style="vertical-align: middle;"><?= $user['age'] ?></td>
           <td class="flex align-items-center">
             <div class="d-flex justify-content-end gap-2">

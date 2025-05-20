@@ -115,7 +115,7 @@ function getUsers(array $params = [])
     if (is_numeric($search)) {
       $sql .= " (id = $search OR age = $search) ";
     } else {
-      $sql .= " (fiscalcode LIKE '%$search%' OR email LIKE '%$search%' OR username LIKE '%$search%')";
+      $sql .= " (fiscalcode LIKE '%$search%' OR email LIKE '%$search%' OR username LIKE '%$search%' OR roletype LIKE '%$search%')";
     }
   }
   $sql .= " ORDER BY $orderBy $orderDir LIMIT $start, $limit";
@@ -146,7 +146,7 @@ function getTotaUsersCount(string $search = ''): int
       $sql .= " id = $search OR age = $search";
     } else {
       $search = $conn->real_escape_string($search);
-      $sql .= " fiscalcode LIKE '%$search%' OR email LIKE '%$search%' OR username LIKE '%$search%'";
+      $sql .= " fiscalcode LIKE '%$search%' OR email LIKE '%$search%' OR username LIKE '%$search%' OR roletype LIKE '%$search%'";
     }
   }
 
@@ -593,4 +593,88 @@ function deleteUserImages(string $avatarPath): bool
     error_log('Image deletion error: ' . $e->getMessage());
     return false;
   }
+}
+
+/**
+ * Verifies user login credentials
+ * @param string $email User email
+ * @param string $password User password
+ * @param string $token CSRF token
+ * @return array|null Array of user data or null if login fails
+ */
+function verifyLogin($email, $password, $token)
+{
+  if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+  }
+
+  $result = [
+    'message' => 'User logged in successfully',
+    'success' => true
+  ];
+
+  if ($token !== ($_SESSION['csrf'] ?? null)) {
+    $result = [
+      'message' => 'Invalid CSRF token',
+      'success' => false
+    ];
+    return $result;
+  }
+
+  $email = filter_var($email, FILTER_VALIDATE_EMAIL);
+  if (!$email) {
+    $result = [
+      'message' => 'Invalid credentials',
+      'success' => false
+    ];
+    return $result;
+  }
+
+  include_once 'model/User.php';
+
+  $resEmail = getUserByEmail($email);
+  if(!$resEmail) {
+    $result = [
+      'message' => 'Invalid credentials',
+      'success' => false
+    ];
+    return $result;
+  }
+
+  if(!password_verify($password, $resEmail['password'])) {
+    $result = [
+      'message' => 'Invalid credentials',
+      'success' => false
+    ];
+    return $result;
+  }
+
+  return $result;
+}
+
+/**
+ * Checks if a user is logged in
+ * @return bool True if user is logged in, false otherwise
+ */
+function isUserLogged()
+{
+  return $_SESSION['logged'] ?? false;
+}
+
+/**
+ * Gets the username of the logged in user
+ * @return string Username of the logged in user
+ */
+function getUserLoggedUsername()
+{
+  return $_SESSION['userData']['username'] ?? '';
+}
+
+/**
+ * Gets the role of the logged in user
+ * @return string Role of the logged in user
+ */
+function getUserLoggedRole()
+{
+  return $_SESSION['userData']['roletype'] ?? 'user';
 }

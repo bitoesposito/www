@@ -25,6 +25,24 @@ function getUserById(int $id) : array {
   return $user;
 }
 
+function getUserByEmail($email) : array {
+  $conn = getConnection();
+  $res = [];
+  $email = filter_var($email, FILTER_VALIDATE_EMAIL);
+
+  if(!$email) {
+    return $res;
+  }
+  
+  $email = mysqli_escape_string($conn, $email);
+  $sql = "SELECT * FROM users WHERE email='$email'";
+  $res = $conn->query($sql);
+  $user = $res->fetch_assoc();
+  $conn->close();
+  
+  return $user ?: [];
+}
+
 function updateUser(array $data, int $id) : bool {
   require_once '../connection.php';
   $conn = getConnection();
@@ -70,14 +88,12 @@ function createUser(array $data) : int {
   $sql = 'INSERT INTO users (username, email, password, roletype, fiscalcode, age, avatar) values (?,?,?,?,?,?,?)';
   $stm = $conn->prepare($sql);
   
-  // Hash the password
-  $password = password_hash($data['password'] ?? 'testuser', PASSWORD_DEFAULT);
+  // Hash the password with a secure algorithm
+  $password = password_hash($data['password'] ?? 'test123', PASSWORD_DEFAULT);
   
   // Set default roletype if not valid
   $validRoles = ['user', 'editor', 'admin'];
   $roletype = isset($data['roletype']) && in_array($data['roletype'], $validRoles) ? $data['roletype'] : 'user';
-  
-  error_log('ROLO TYPE: ' . print_r($data['roletype'], true));
   
   $stm->bind_param('sssssis',
     $data['username'],
