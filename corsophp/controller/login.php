@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 if (!empty($_POST)) {
 
@@ -37,12 +38,16 @@ if (!empty($_POST)) {
     // Set session data after successful login
     $_SESSION['logged'] = true;
     $_SESSION['userData'] = $result['user'];
-    header('Location: ../index.php');
+
+    // Return JSON response for AJAX requests
+    header('Content-Type: application/json');
+    echo json_encode(['success' => true]);
     exit;
 
   } else {
-    $_SESSION['message'] = $result['message'];
-    header('Location: ../login.php?error=' . urlencode($result['message']));
+    // Return JSON response for AJAX requests
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => $result['message']]);
     exit;
   }
 } else {

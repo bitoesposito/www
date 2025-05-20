@@ -17,12 +17,12 @@ $baseUrl = "?$paginationParams";
 $maxLinks = getConfig('maxLinks', 10);
 ?>
 
-<div class="w-100 d-flex justify-content-between align-items-center">
-  <h3>Users list</h3>
+<div class="w-100 d-flex gap-2 justify-content-between align-items-center">
+  <h3 class="text-nowrap">Users list</h3>
 
   <form style="margin: 0;" role="search" id="searchForm" method="GET" class="d-flex gap-2 align-items-center">
 
-    <small style="line-height: 1;" class="form-label mb-0" for="recordsPerPage">Records per page</small>
+    <small style="line-height: 1;" class="form-label mb-0 d-md-inline d-none" for="recordsPerPage">Records per page</small>
     <select style="width: 5rem;" class="form-select" name="recordsPerPage" onchange="document.forms.searchForm.submit()">
 
       <?php
@@ -47,7 +47,7 @@ $maxLinks = getConfig('maxLinks', 10);
       <th style="width: 60px; min-width: 60px;" class="<?= $orderBy === 'id' ? $orderDirClass : '' ?>">
         <a href="?<?= $headerParams ?>&orderBy=id">ID</a>
       </th>
-      <th style="width: 80px;" class="<?= $orderBy === 'avatar' ? $orderDirClass : '' ?>">
+      <th style="width: 80px;" class="<?= $orderBy === 'avatar' ? $orderDirClass : '' ?>  d-md-table-cell d-none">
         <a href="?<?= $headerParams ?>&orderBy=avatar">AVATAR</a>
       </th>
       <th class="<?= $orderBy === 'username' ? $orderDirClass : '' ?>">
@@ -62,8 +62,9 @@ $maxLinks = getConfig('maxLinks', 10);
       <th class="<?= $orderBy === 'age' ? $orderDirClass : '' ?>">
         <a href="?<?= $headerParams ?>&orderBy=age">AGE</a>
       </th>
-      <th>&nbsp;</th>
-
+      <?php if (userCanUpdate()): ?>
+        <th>&nbsp;</th>
+      <?php endif; ?>
     </tr>
   </thead>
 
@@ -74,7 +75,7 @@ $maxLinks = getConfig('maxLinks', 10);
 
         <tr>
           <td style="vertical-align: middle;"><?= $user['id'] ?></td>
-          <td> <?php
+          <td class=" d-md-table-cell d-none"> <?php
               if ($user['avatar']) {
                 $fileData = getImgThumbNail($user['avatar']);
                 if ($fileData['avatar']) {
@@ -98,21 +99,25 @@ $maxLinks = getConfig('maxLinks', 10);
             <?php endif; ?>
           </td>
           <td style="vertical-align: middle;"><?= $user['age'] ?></td>
+          <?php if (userCanUpdate()): ?>
           <td class="flex align-items-center">
             <div class="d-flex justify-content-end gap-2">
-              <a
+                <a
                 href="?action=edit&id=<?= $user['id'] ?>&<?= $paginationParams ?>"
                 class="btn btn-outline-primary">
                 <i class="fa fa-pen fs-6"></i>
               </a>
-              <a
+              <?php if (userCanDelete()): ?>
+                <a
                 onclick="return confirm('Are you sure you want to delete this user?')"
                 href="<?= $updateUrl ?>?action=delete&id=<?= $user['id'] ?>&<?= $paginationParams ?>"
                 class="btn btn-outline-secondary">
                 <i class="fa fa-trash fs-6"></i>
               </a>
+              <?php endif; ?>
             </div>
           </td>
+          <?php endif; ?>
         </tr>
 
       <?php

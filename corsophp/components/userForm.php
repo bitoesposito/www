@@ -1,7 +1,7 @@
 <?php
 
-if (!isUserLogged()) {
-  header('Location: ../login.php');
+if (!isUserLogged() || !userCanUpdate()) {
+  header('Location: ./login.php');
   exit;
 }
 

@@ -204,7 +204,7 @@ function handleAvatarUpload(array $file, int $userId = null, ?string $oldAvatarP
     $config = require 'config.php';
     $uploadDir = $config['uploadDir'] ?? 'avatar';
     $uploadDirPath = realpath(__DIR__) . '/' . $uploadDir . '/';
-    
+
     // Delete old avatar and its versions if they exist
     if ($oldAvatarPath) {
       deleteUserImages($oldAvatarPath);
@@ -228,11 +228,11 @@ function handleAvatarUpload(array $file, int $userId = null, ?string $oldAvatarP
     if (!isset($mimeMap[$mimeType])) {
       throw new Exception('Invalid file type');
     }
-    
+
     $extension = $mimeMap[$mimeType];
     $fileName = ($userId ? $userId . '_' : '') . bin2hex(random_bytes(8)) . '.' . $extension;
     $targetPath = $uploadDirPath . $fileName;
-    
+
     // Move uploaded file
     if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
       throw new Exception('Failed to move uploaded file');
@@ -240,7 +240,7 @@ function handleAvatarUpload(array $file, int $userId = null, ?string $oldAvatarP
 
     // Generate thumbnail and intermediate versions
     createThumbnailAndIntermediate($uploadDir . '/' . $fileName);
-    
+
     return $uploadDir . '/' . $fileName;
   } catch (Exception $e) {
     error_log('Avatar upload error: ' . $e->getMessage());
@@ -270,7 +270,7 @@ function createThumbnailAndIntermediate(string $originalPath): bool
     $config = require 'config.php';
     $thumbnailWidth = $config['thumbnailWidth'] ?? 120;
     $intermediateWidth = $config['intermediateWidth'] ?? 600;
-    
+
     // Get absolute path to the original file
     $sourcePath = realpath(__DIR__ . '/' . $originalPath);
     if (!$sourcePath || !file_exists($sourcePath)) {
@@ -292,7 +292,7 @@ function createThumbnailAndIntermediate(string $originalPath): bool
     // Create thumbnail and intermediate versions
     resizeImage($sourcePath, $thumbnailPath, $thumbnailWidth, $mimeType);
     resizeImage($sourcePath, $intermediatePath, $intermediateWidth, $mimeType);
-    
+
     return true;
   } catch (Exception $e) {
     error_log('Image processing error: ' . $e->getMessage());
@@ -341,7 +341,7 @@ function resizeImage(string $sourcePath, string $targetPath, int $width, string 
   }
 
   imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $width, $newHeight, $originalWidth, $originalHeight);
-  
+
   // Save the resized image
   $quality = getConfig('imageQuality') ?? 90;
   switch ($mimeType) {
@@ -367,20 +367,20 @@ function resizeImage(string $sourcePath, string $targetPath, int $width, string 
  */
 function getImgThumbNail(string $path, string $size = 's'): array
 {
-    $imgWidth = getConfig($size === 's' ? 'thumbnailWidth' : 'intermediateWidth', 120);
-    $fileData = ['width' => $imgWidth, 'avatar' => ''];
-    $prefix = $size === 's' ? 'thumbnail_' : 'intermediate_';
-    $fileName = $prefix . basename($path);
-    $thumbnail = getConfig('uploadDir', 'avatar')
-        . '/' . $fileName;
+  $imgWidth = getConfig($size === 's' ? 'thumbnailWidth' : 'intermediateWidth', 120);
+  $fileData = ['width' => $imgWidth, 'avatar' => ''];
+  $prefix = $size === 's' ? 'thumbnail_' : 'intermediate_';
+  $fileName = $prefix . basename($path);
+  $thumbnail = getConfig('uploadDir', 'avatar')
+    . '/' . $fileName;
 
-    $uploadDir  = getUploadDir() . '/' . $fileName;
-    if (file_exists($uploadDir)) {
-        $fileData['avatar'] = $thumbnail;
-        $fileData['width'] = $imgWidth;
-    }
+  $uploadDir  = getUploadDir() . '/' . $fileName;
+  if (file_exists($uploadDir)) {
+    $fileData['avatar'] = $thumbnail;
+    $fileData['width'] = $imgWidth;
+  }
 
-    return $fileData;
+  return $fileData;
 }
 
 /**
@@ -406,7 +406,7 @@ function validateFileUpload(array $file): array
   if ($file['size'] > $config['maxFileSize']) {
     $errors[] = 'File size exceeds ' . $config['maxFileSize'];
   }
-  
+
   return $errors;
 }
 
@@ -532,15 +532,15 @@ function convertMaxUploadSizeToBytes(): int
   $maxUploadSize = ini_get('upload_max_filesize');
   $number = (int) $maxUploadSize;
   $unit = strtoupper(substr($maxUploadSize, -1));
-  switch($unit) {
+  switch ($unit) {
     case 'K':
       $number *= 1024;
       break;
     case 'M':
-      $number *= (1024**2);
+      $number *= (1024 ** 2);
       break;
     case 'G':
-      $number *= (1024**3);
+      $number *= (1024 ** 3);
       break;
     default:
       $number = (int) $maxUploadSize;
@@ -559,7 +559,7 @@ function formatBytes(int $bytes): string
   $units = ['B', 'KB', 'MB', 'GB'];
   $power = floor(log($bytes, 1024));
   $number = round($bytes / (1024 ** $power), 2);
-  return $number.' '.$units[$power];
+  return $number . ' ' . $units[$power];
 }
 
 /**
@@ -573,7 +573,7 @@ function deleteUserImages(string $avatarPath): bool
     if (!$avatarPath) {
       return true;
     }
-    
+
     $uploadDir = getUploadDir();
     $fileName = basename($avatarPath);
     $filesToDelete = [
@@ -587,7 +587,7 @@ function deleteUserImages(string $avatarPath): bool
         unlink($file);
       }
     }
-    
+
     return true;
   } catch (Exception $e) {
     error_log('Image deletion error: ' . $e->getMessage());
@@ -633,7 +633,7 @@ function verifyLogin($email, $password, $token)
   include_once 'model/User.php';
 
   $resEmail = getUserByEmail($email);
-  if(!$resEmail) {
+  if (!$resEmail) {
     $result = [
       'message' => 'Invalid credentials',
       'success' => false
@@ -641,7 +641,7 @@ function verifyLogin($email, $password, $token)
     return $result;
   }
 
-  if(!password_verify($password, $resEmail['password'])) {
+  if (!password_verify($password, $resEmail['password'])) {
     $result = [
       'message' => 'Invalid credentials',
       'success' => false
@@ -649,6 +649,7 @@ function verifyLogin($email, $password, $token)
     return $result;
   }
 
+  $result['user'] = $resEmail;
   return $result;
 }
 
@@ -677,4 +678,32 @@ function getUserLoggedUsername()
 function getUserLoggedRole()
 {
   return $_SESSION['userData']['roletype'] ?? 'user';
+}
+
+/**
+ * Checks if the logged in user is an admin
+ * @return bool True if user is an admin, false otherwise
+ */
+function isUserAdmin()
+{
+  return getUserLoggedRole() === 'admin';
+}
+
+/**
+ * Checks if the logged in user can update
+ * @return bool True if user can update, false otherwise
+ */
+function userCanUpdate()
+{
+  $role = getUserLoggedRole();
+  return ($role === 'admin' || $role === 'editor');
+}
+
+/**
+ * Checks if the logged in user can delete
+ * @return bool True if user can delete, false otherwise
+ */
+function userCanDelete()
+{
+  return isUserAdmin();
 }

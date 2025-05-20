@@ -35,9 +35,16 @@ include_once './components/head.php';
       </div>
 
       <div class="form-group form-check">
-        <input  style="cursor: pointer;" type="checkbox" class="form-check-input" id="remember">
-        <label  style="cursor: pointer;" class="form-check-label" for="remember">Remember me</label>
+        <input style="cursor: pointer;" type="checkbox" class="form-check-input" id="remember">
+        <label style="cursor: pointer;" class="form-check-label" for="remember">Remember me</label>
       </div>
+
+      <?php
+      if (!empty($_SESSION['message'])) {
+        echo '<div class="alert alert-danger p-2">' . $_SESSION['message'] . '</div>';
+        unset($_SESSION['message']);
+      }
+      ?>
 
       <button type="submit" class="btn btn-primary">Login</button>
 
@@ -47,3 +54,29 @@ include_once './components/head.php';
 
 <?php
 include_once './components/footer.php';
+?>
+
+<script>
+  $(function() {
+    $('form').on('submit', function(e) {
+      e.preventDefault();
+      const data = $(this).serialize();
+      
+      $.ajax({
+        method: 'POST',
+        data: data,
+        url: 'controller/login.php',
+        success: function(response) {
+          if (response.success) {
+            location.href = 'index.php';
+          } else {
+            alert(response.message);
+          }
+        },
+        error: function() {
+          alert('Error contacting server');
+        }
+      });
+    });
+  });
+</script>

@@ -21,10 +21,7 @@ $indexActive = !$action ? 'active' : '';
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav me-auto mb-2 mb-md-0 w-100" >
           <li class="nav-item">
-            <a class="text-nowrap nav-link active" aria-current="page" href="<?= $indexPage ?>"><i class="fa-solid fa-users fa-xs me-1"></i> Users</a>
-          </li>
-          <li class="nav-item">
-            <a class="text-nowrap nav-link <?= $indexActive ?>" href="<?= $indexPage ?>?action=insert"><i class="fa-solid fa-user-plus fa-xs me-1"></i>New user</a>
+            <a class="text-nowrap nav-link <?= userCanUpdate() ? '' : 'disabled text-muted' ?> <?= $indexActive ?>" href="<?= $indexPage ?>?action=insert"><i class="fa-solid fa-user-plus fa-xs me-1"></i>New user</a>
           </li>
           <form role="form" method="post" action="controller/login.php" class="w-100 d-flex justify-content-start justify-content-md-end">
             <input type="hidden" name="action" value="logout">
@@ -33,6 +30,7 @@ $indexActive = !$action ? 'active' : '';
           
       </div>
 
+      <div style="position: absolute; top: 3rem; right: 50%; transform: translateX(50%);">
       <?php
       if (!empty($_SESSION['message'])) {
 
@@ -46,6 +44,7 @@ $indexActive = !$action ? 'active' : '';
         unset($_SESSION['success']);
       }
       ?>
+      </div>
     </div>
   </nav>
 </header>
