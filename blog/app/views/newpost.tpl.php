@@ -1,6 +1,6 @@
 <h1>Create new post</h1>
 
-<form action="/blog/posts/save" method="POST">
+<form action="/blog/posts" method="POST">
   <div class="mb-3">
     <label for="email" class="form-label mb-0">Email address</label>
     <input required type="email" class="form-control" id="email" name="email" placeholder="Enter email">

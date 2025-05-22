@@ -32,9 +32,12 @@ try {
   $controller = new $controllerClass($conn);
   
   if(method_exists($controller, $method)) {
-    // Check if we have a parameter for the method (like show(id))
+    // Check if we have parameters for the method
     if (isset($arrController[2])) {
-      $controller->$method($arrController[2]);
+      // Get all parameters (keys 2 and beyond)
+      $params = array_slice($arrController, 2);
+      // Call the method with all parameters using call_user_func_array
+      call_user_func_array([$controller, $method], $params);
     } else {
       $controller->$method();
     }

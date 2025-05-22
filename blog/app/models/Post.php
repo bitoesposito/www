@@ -47,4 +47,30 @@ class Post {
     return $res;
   }
   
+  public function update($post) {
+    $res = false;
+    $sql = 'UPDATE posts SET title = :title, message = :message, email = :email WHERE id = :id';
+    $stm = $this->conn->prepare($sql);
+    if ($stm) {
+      $res = $stm->execute([
+        'id' => $post['id'],
+        'title' => $post['title'],
+        'message' => $post['message'],
+        'email' => $post['email']
+      ]);
+      return $stm->rowCount();
+    }
+    return $res;
+  }
+
+  public function delete($postId) {
+    $sql = "DELETE FROM posts WHERE id = :id";
+    $stm = $this->conn->prepare($sql);
+    if ($stm) {
+      $res = $stm->execute(['id' => $postId]);
+      return $stm->rowCount();
+    }
+    return 0;
+  }
+  
 }
