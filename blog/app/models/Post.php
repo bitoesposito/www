@@ -12,7 +12,7 @@ class Post {
 
   public function all() {
     $result = [];
-    $stm = $this->conn->query('SELECT * FROM posts', PDO::FETCH_ASSOC);
+    $stm = $this->conn->query('SELECT * FROM posts ORDER BY datecreated DESC', PDO::FETCH_ASSOC);
     if ($stm && $stm->rowCount()) {
       $result = $stm->fetchAll();
     }

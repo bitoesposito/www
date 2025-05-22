@@ -9,6 +9,8 @@
   <script src="/blog/public/js/color-modes.js"></script>
   <script src="/blog/public/js/jquery.js"></script>
   <script src="/blog/public/js/holder.min.js"></script>
+  <script src="/blog/public/js/bootstrap.bundle.min.js"></script>
+  <script src="/blog/public/js/bootstrap.min.js"></script>
   <link href="/blog/public/css/style.css" rel="stylesheet" >
   <link href="/blog/public/css/bootstrap.min.css" rel="stylesheet" >
   <link href="/blog/public/css/bootstrap-icons.css" rel="stylesheet" >

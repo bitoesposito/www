@@ -13,16 +13,16 @@ $indexActive = !$action ? 'active' : '';
         href="<?= $indexPage ?>">
         <h3><i><b>UMS blog</b></i></h3>
       </a>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
+      <div class="collapse navbar-collapse justify-content-between">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/blog/posts/create"><i class="fa fa-plus"></i> New post</a>
+            <a class="nav-link" href="/blog/create"><i class="fa fa-plus"></i> New post</a>
           </li>
           <li class="nav-item">
             <a class="nav-link disabled" href="#">Disabled</a>
           </li>
         </ul>
-        <form class="form-inline mt-2 mt-md-0">
+        <form class="form-inline mt-2 mt-md-0 d-flex gap-2">
           <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
