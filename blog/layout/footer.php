@@ -5,22 +5,7 @@
   </div>
 </footer>
 
-<script src="./js/bootstrap.bundle.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const message = document.getElementById('message');
-    if (message) {
-      // Wait 3 seconds before starting the fade out
-      setTimeout(() => {
-        message.style.opacity = '0';
-        // Remove the element after the animation is complete
-        setTimeout(() => {
-          message.remove();
-        }, 1000); // 1000ms = transition duration
-      }, 3000);
-    }
-  });
-</script>
+<script src="/blog/public/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

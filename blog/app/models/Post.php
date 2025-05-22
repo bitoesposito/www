@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models;
+
+use PDO;
+
+class Post {
+
+  public function __construct(
+    protected PDO $conn,
+  ) {}
+
+  public function all() {
+    $result = [];
+    $stm = $this->conn->query('SELECT * FROM posts', PDO::FETCH_ASSOC);
+    if ($stm && $stm->rowCount()) {
+      $result = $stm->fetchAll();
+    }
+    return $result;
+  }
+
+  public function findByPostId(int $postId) {
+    $sql = 'SELECT * FROM posts WHERE id = :id';
+    $stm = $this->conn->prepare($sql);
+    if ($stm) {
+      $res = $stm->execute(['id' => $postId]);
+    } 
+    if ($res) {
+      $res = $stm->fetch(PDO::FETCH_ASSOC);
+    }
+    return $res;
+  }
+
+  public function save($post) {
+    $res = false;
+    $sql = 'INSERT INTO posts (title, message, email, datecreated) VALUES ';
+    $sql .= '(:title, :message, :email, NOW())';
+    $stm = $this->conn->prepare($sql);
+    if ($stm) {
+      $res = $stm->execute([
+        'title' => $post['title'],
+        'message' => $post['message'],
+        'email' => $post['email'],
+      ]);
+      return $stm->rowCount();
+    }
+    return $res;
+  }
+  
+}

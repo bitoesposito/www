@@ -1,6 +1,6 @@
 <?php
 $currenturl = $_SERVER['PHP_SELF'];
-$indexPage = 'index.php';
+$indexPage = '/blog';
 $action = $_GET['action'] ?? '';
 $indexActive = !$action ? 'active' : '';
 ?>
@@ -15,11 +15,8 @@ $indexActive = !$action ? 'active' : '';
       </a>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-          </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
+            <a class="nav-link" href="/blog/posts/create"><i class="fa fa-plus"></i> New post</a>
           </li>
           <li class="nav-item">
             <a class="nav-link disabled" href="#">Disabled</a>
