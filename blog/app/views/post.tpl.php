@@ -7,24 +7,30 @@
 </article>
 
 <div class="d-flex gap-2">
-  <form method="POST" action="/blog/posts/<?= $post['id'] ?>/delete" style="display: inline;">
-    <button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash me-2"></i>Delete</button>
-  </form>
+  <?php if(userCanDelete()) : ?>
+    <form method="POST" action="/blog/posts/<?= $post['id'] ?>/delete" style="display: inline;">
+      <button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash me-2"></i>Delete</button>
+    </form>
+  <?php endif; ?>
 
-  <a class="btn btn-primary" href="/blog/posts/<?= $post['id'] ?>/edit"><i class="fa fa-pencil me-2"></i>Edit</a>
+  <?php if(userCanUpdate()) : ?>
+    <a class="btn btn-primary" href="/blog/posts/<?= $post['id'] ?>/edit"><i class="fa fa-pencil me-2"></i>Edit</a>
+  <?php endif; ?>
 </div>
 
 <hr>
 
-<div class="card mb-3">
 
-  <div class="card-body">
-    <h5>Leave a comment</h5>
-    <form action="/blog/posts/<?= $post['id'] ?>/comments" method="POST">
-      <div class="d-flex flex-column flex-start mb-3">
+<?php if(isUserLoggedin()) : ?>
+  <div class="card mb-3">
+
+    <div class="card-body">
+      <h5>Leave a comment</h5>
+      <form action="/blog/posts/<?= $post['id'] ?>/comments" method="POST">
+        <div class="d-flex flex-column flex-start mb-3">
         <div class="mb-2">
           <label for="email" class="form-label mb-0">Email address</label>
-          <input required type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+          <input required <?php if(isUserLoggedin()) : ?> disabled <?php endif; ?> type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="<?= htmlentities($post['email']) ?>">
         </div>
         <div>
           <label for="message" class="form-label mb-0">Content</label>
@@ -33,13 +39,15 @@
       </div>
       <div class="d-flex w-100 justify-content-end">
         <button type="submit" class="btn btn-success">Comment</button>
-      </div>
-    </form>
-  </div>
+        </div>
+      </form>
+    </div>
+    <?php endif; ?>
 </div>
 
 <h5>Comments</h5>
 
+<?php if(count($comments) > 0) : ?>
 <div class="d-flex flex-column mb-3">
   <?php
   foreach ($comments as $comment) : ?>
@@ -57,7 +65,9 @@
 
               <div class="d-flex flex-column gap-2">
                 <p class="mb-0"><time style="line-height: 1;" datetime="<?= htmlentities($comment->datecreated) ?>"><?= htmlentities($comment->datecreated) ?></time></p>
-                <a href="/blog/posts/<?= $post['id'] ?>/comments/<?= $comment->id ?>/delete" class="btn btn-outline-secondary">Delete</a>
+                <?php if(userCanDeleteComment($comment->email)) : ?>
+                  <a href="/blog/posts/<?= $post['id'] ?>/comments/<?= $comment->id ?>/delete" class="btn btn-outline-secondary">Delete</a>
+                <?php endif; ?>
               </div>
             </div>
           </div>
@@ -67,3 +77,6 @@
 
   <?php endforeach; ?>
 </div>
+<?php else: ?>
+  <p>No comments yet</p>
+<?php endif; ?>

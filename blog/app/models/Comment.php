@@ -25,14 +25,15 @@ class Comment {
   public function save(array $comment, int $postid): bool {
       $ret = false;
 
-      $sql = 'INSERT INTO  postscomments ( post_id,  email, comment ,datecreated) values ';
-      $sql .= ' (:postid,  :email, :comment ,NOW())';
+      $sql = 'INSERT INTO  postscomments ( post_id, user_id, email, comment, datecreated) values ';
+      $sql .= ' (:postid, :user_id, :email, :comment, NOW())';
 
       $stm = $this->conn->prepare($sql);
 
       if ($stm) {
         $res = $stm->execute([
           'postid' => $postid,
+          'user_id' => $comment['user_id'] ?? null,
           'email' => $comment['email'],
           'comment' => $comment['comment'] 
           ]

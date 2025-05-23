@@ -33,14 +33,15 @@ class Post {
 
   public function save($post) {
     $res = false;
-    $sql = 'INSERT INTO posts (title, message, email, datecreated) VALUES ';
-    $sql .= '(:title, :message, :email, NOW())';
+    $sql = 'INSERT INTO posts (user_id, title, message, email, datecreated) VALUES ';
+    $sql .= '(:user_id, :title, :message, :email, NOW())';
     $stm = $this->conn->prepare($sql);
     if ($stm) {
       $res = $stm->execute([
+        'user_id' => $post['user_id'],
         'title' => $post['title'],
         'message' => $post['message'],
-        'email' => $post['email'],
+        'email' => $post['email']
       ]);
       return $stm->rowCount();
     }

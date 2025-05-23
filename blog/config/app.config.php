@@ -14,6 +14,7 @@ return [
       'blog/posts/{id}/comments/{commentId}/delete' => [PostController::class, 'deleteComment'],
       'blog/auth/login' => [LoginController::class, 'showLogin'],
       'blog/auth/signup' => [LoginController::class, 'showSignup'],
+      'blog/auth/logout' => [LoginController::class, 'logout'],
     ],
     'POST' => [
       'blog/posts' => [PostController::class, 'save'],

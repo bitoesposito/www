@@ -50,29 +50,32 @@ class PostController extends BaseController {
   }
 
   public function save() {
-    
     $post = [
+      'user_id' => $_SESSION['userData']['id'] ?? '',
       'email' => $_POST['email'] ?? '',
       'title' => $_POST['title'] ?? '',
       'message' => $_POST['message'] ?? ''
     ];
 
-    $this->post->save($_POST);
+    $this->post->save($post);
 
+    // Redirect to a GET page after POST processing
     header('Location: /blog');
     exit;
   }
 
   public function saveComment(int $postid ): void {
     $comment = [
-      'email' => $_POST['email'] ?? '',
+      'email' => isUserLoggedin() ? getUserEmail() : ($_POST['email'] ?? ''),
       'comment' => $_POST['comment'] ?? '',
+      'user_id' => isUserLoggedin() ? getUserId() : null
     ];
     
     $commentObj = new Comment($this->conn);
     $commentObj->save($comment, $postid);
     
     header('Location: /blog/posts/'.$postid);
+    exit;
   }
 
   public function delete($postId) {
